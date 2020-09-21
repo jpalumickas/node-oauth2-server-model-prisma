@@ -70,7 +70,8 @@ export default ({ prisma }) => {
         user: { connect: { id: user.id } },
         token: token.accessToken,
         refreshToken: token.refreshToken,
-        expiresAt: token.accessTokenExpiresAt,
+        tokenExpiresAt: token.accessTokenExpiresAt,
+        refreshTokenExpiresAt: token.refreshTokenExpiresAt,
       },
     });
 
@@ -88,12 +89,76 @@ export default ({ prisma }) => {
     return token;
   };
 
+  // Authorization Code
+
+  const getAuthorizationCode = async (code) => {
+    const accessGrant = await prisma.oauthAccessGrant.findOne({ where: { token: code.code }, include: { user: true } });
+    if (!accessGrant) return false;
+
+    if (accessGrant.expiresAt && Date.parse(accessGrant.expiresAt) >= Date.now()) {
+      await revokeAuthorizationCode(code);
+      return false;
+    }
+
+    return {
+      code: accessGrant.token,
+      expiresAt: accessGrant.expiresAt,
+      scope: accessGrant.scopes[0],
+      client: {
+        id: accessGrant.applicationId
+      },
+      user: accessGrant.user,
+    }
+  }
+
+  const saveAuthorizationCode = async (code, client, user) => {
+    await prisma.oauthAccessGrants.create({
+      data: {
+        application: { connect: { id: client.id } },
+        user: { connect: { id: user.id } },
+        token: code.authorizationCode,
+        scope: Array.isArray(code.scope) ? code.scope : [code.scope],
+        expiresAt: code.expiresAt,
+        redirectUri: code.redirectUri
+      },
+    });
+
+    code.client = {
+      id: client.id,
+      clientId: client.clientId,
+      name: client.name,
+    };
+
+    code.user = {
+      id: user.id,
+      email: user.email,
+    };
+
+    return code;
+  };
+
+  const revokeAuthorizationCode = async ({ code }) => {
+    const accessGrant = await prisma.oauthAccessGrant.findOne({
+      where: { token: code },
+    });
+    if (!accessGrant) return false;
+
+    await prisma.oauthAccessGrant.delete({
+      where: { id: accessGrant.id },
+    });
+
+    return true
+  };
+
+
   const validateScope = async (user, client, scope) => {
     if (!client.scopes.length) return client.scopes;
     if (!client.scopes.includes(scope)) return false;
 
     return client.scopes;
   };
+
+  // External Grant Types
 
   const getUserWithFacebook = async ({ email, id: facebookId, ...rest }) => {
     console.log({ email, ...rest });
@@ -132,13 +197,20 @@ export default ({ prisma }) => {
   };
 
   return {
+    getClient,
+    getUser,
+
     getAccessToken,
     getRefreshToken,
     revokeToken,
-    getClient,
-    getUser,
     saveToken,
+
+    saveAuthorizationCode,
+    getAuthorizationCode,
+    revokeAuthorizationCode,
+
     validateScope,
+
     getUserWithFacebook,
     getUserWithGoogle,
     getUserWithApple,
