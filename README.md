@@ -33,19 +33,37 @@ npm install oauth2-server-grant-type-apple
 ```groovy
 
 model OauthAccessToken {
+  id                    String           @default(dbgenerated()) @id
+  userId                String
+  applicationId         String
+  token                 String           @unique
+  refreshToken          String?          @unique
+  tokenExpiresAt        DateTime?
+  refreshTokenExpiresAt DateTime?
+  createdAt             DateTime
+  updatedAt             DateTime         @updatedAt
+  application           OauthApplication @relation(fields: [applicationId], references: [id])
+  user                  User             @relation(fields: [userId], references: [id])
+
+  @@index([applicationId], name: "index_oauth_access_tokens_on_application_id")
+  @@index([userId], name: "index_oauth_access_tokens_on_user_id")
+}
+
+model OauthAccessGrant {
   id            String           @default(dbgenerated()) @id
   userId        String
   applicationId String
-  token         String           @unique
-  refreshToken  String?          @unique
-  expiresAt     String?
+  token         String
+  expiresAt     DateTime
+  redirectUri   String
+  scopes        Json             @default("[]")
   createdAt     DateTime
   updatedAt     DateTime         @updatedAt
   application   OauthApplication @relation(fields: [applicationId], references: [id])
   user          User             @relation(fields: [userId], references: [id])
 
-  @@index([applicationId], name: "index_oauth_access_tokens_on_application_id")
-  @@index([userId], name: "index_oauth_access_tokens_on_user_id")
+  @@index([applicationId], name: "index_oauth_access_grants_on_application_id")
+  @@index([userId], name: "index_oauth_access_grants_on_user_id")
 }
 
 model OauthApplication {
@@ -59,6 +77,7 @@ model OauthApplication {
   updatedAt    DateTime           @updatedAt
   grants       Json               @default("[]")
   accessTokens OauthAccessToken[]
+  accessGrants OauthAccessGrant[]
 }
 
 model User {
@@ -69,6 +88,7 @@ model User {
   createdAt         DateTime
   updatedAt         DateTime           @updatedAt
   accessTokens      OauthAccessToken[]
+  accessGrants      OauthAccessGrant[]
 }
 ```
 
