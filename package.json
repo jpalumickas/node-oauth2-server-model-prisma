@@ -17,12 +17,11 @@
   },
   "license": "MIT",
   "dependencies": {
-    "bcrypt": "^5.0.0",
-    "jsonwebtoken": "^8.5.1",
-    "jwks-rsa": "^1.9.0"
+    "bcrypt": "^5.0.0"
   },
   "peerDependencies": {
-    "oauth2-server": "3.x"
+    "oauth2-server": "3.x",
+    "prisma": "2.x"
   },
   "devDependencies": {
     "@babel/plugin-proposal-optional-chaining": "^7.11.0",
