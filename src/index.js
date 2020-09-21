@@ -8,6 +8,17 @@ export default ({ prisma }) => {
     const accessToken = await prisma.oauthAccessToken.findOne({
       where: { token },
     });
+
+    if (!accessToken) return;
+
+    if (
+      accessToken.tokenExpiresAt &&
+      Date.parse(accessToken.tokenExpiresAt) <= Date.now()
+    ) {
+      await revokeToken(accessToken);
+      return;
+    }
+
     return accessToken;
   };
 
@@ -15,7 +26,16 @@ export default ({ prisma }) => {
     const token = await prisma.oauthAccessToken.findOne({
       where: { refreshToken },
     });
+
     if (!token) return;
+
+    if (
+      token.refreshTokenExpiresAt &&
+      Date.parse(token.refreshTokenExpiresAt) <= Date.now()
+    ) {
+      await revokeToken(token);
+      return;
+    }
 
     return {
       token: token.token,
@@ -82,7 +102,7 @@ export default ({ prisma }) => {
 
     if (
       accessGrant.expiresAt &&
-      Date.parse(accessGrant.expiresAt) >= Date.now()
+      Date.parse(accessGrant.expiresAt) <= Date.now()
     ) {
       await revokeAuthorizationCode(code);
       return false;

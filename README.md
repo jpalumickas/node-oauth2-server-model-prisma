@@ -40,6 +40,7 @@ model OauthAccessToken {
   refreshToken          String?          @unique
   tokenExpiresAt        DateTime?
   refreshTokenExpiresAt DateTime?
+  scopes                Json             @default("[]")
   createdAt             DateTime
   updatedAt             DateTime         @updatedAt
   application           OauthApplication @relation(fields: [applicationId], references: [id])
