@@ -2,8 +2,13 @@ import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 
 export default ({ prisma }) => {
+  // Access Tokens
+
   const getAccessToken = async (token) => {
-    return await prisma.oauthAccessToken.findOne({ where: { token } });
+    const accessToken = await prisma.oauthAccessToken.findOne({
+      where: { token },
+    });
+    return accessToken;
   };
 
   const getRefreshToken = async (refreshToken) => {
@@ -24,6 +29,37 @@ export default ({ prisma }) => {
     };
   };
 
+  const saveToken = async (token, client, user) => {
+    const scopes =
+      token.scope && (Array.isArray(token.scope) ? token.scope : [token.scope]);
+
+    await prisma.oauthAccessToken.create({
+      data: {
+        application: { connect: { id: client.id } },
+        user: { connect: { id: user.id } },
+        token: token.accessToken,
+        refreshToken: token.refreshToken,
+        tokenExpiresAt: token.accessTokenExpiresAt,
+        createdAt: new Date().toISOString(),
+        refreshTokenExpiresAt: token.refreshTokenExpiresAt,
+        scopes,
+      },
+    });
+
+    token.client = {
+      id: client.id,
+      clientId: client.clientId,
+      name: client.name,
+    };
+
+    token.user = {
+      id: user.id,
+      email: user.email,
+    };
+
+    return token;
+  };
+
   const revokeToken = async ({ token }) => {
     const accessToken = await prisma.oauthAccessToken.findOne({
       where: { token },
@@ -34,6 +70,78 @@ export default ({ prisma }) => {
       where: { id: accessToken.id },
     });
   };
+
+  // Authorization Code
+
+  const getAuthorizationCode = async (code) => {
+    const accessGrant = await prisma.oauthAccessGrant.findOne({
+      where: { token: code.code },
+      include: { user: true },
+    });
+    if (!accessGrant) return false;
+
+    if (
+      accessGrant.expiresAt &&
+      Date.parse(accessGrant.expiresAt) >= Date.now()
+    ) {
+      await revokeAuthorizationCode(code);
+      return false;
+    }
+
+    return {
+      code: accessGrant.token,
+      expiresAt: accessGrant.expiresAt,
+      scope: accessGrant.scopes[0],
+      client: {
+        id: accessGrant.applicationId,
+      },
+      user: accessGrant.user,
+    };
+  };
+
+  const saveAuthorizationCode = async (code, client, user) => {
+    const scopes =
+      code.scope && (Array.isArray(code.scope) ? code.scope : [code.scope]);
+
+    await prisma.oauthAccessGrants.create({
+      data: {
+        application: { connect: { id: client.id } },
+        user: { connect: { id: user.id } },
+        token: code.authorizationCode,
+        expiresAt: code.expiresAt,
+        createdAt: new Date().toISOString(),
+        redirectUri: code.redirectUri,
+      },
+    });
+
+    code.client = {
+      id: client.id,
+      clientId: client.clientId,
+      name: client.name,
+    };
+
+    code.user = {
+      id: user.id,
+      email: user.email,
+    };
+
+    return code;
+  };
+
+  const revokeAuthorizationCode = async ({ code }) => {
+    const accessGrant = await prisma.oauthAccessGrant.findOne({
+      where: { token: code },
+    });
+    if (!accessGrant) return false;
+
+    await prisma.oauthAccessGrant.delete({
+      where: { id: accessGrant.id },
+    });
+
+    return true;
+  };
+
+  // General
 
   const getClient = async (clientId, clientSecret) => {
     const application = await prisma.oauthApplication.findOne({
@@ -62,94 +170,6 @@ export default ({ prisma }) => {
 
     return user;
   };
-
-  const saveToken = async (token, client, user) => {
-    await prisma.oauthAccessToken.create({
-      data: {
-        application: { connect: { id: client.id } },
-        user: { connect: { id: user.id } },
-        token: token.accessToken,
-        refreshToken: token.refreshToken,
-        tokenExpiresAt: token.accessTokenExpiresAt,
-        refreshTokenExpiresAt: token.refreshTokenExpiresAt,
-      },
-    });
-
-    token.client = {
-      id: client.id,
-      clientId: client.clientId,
-      name: client.name,
-    };
-
-    token.user = {
-      id: user.id,
-      email: user.email,
-    };
-
-    return token;
-  };
-
-  // Authorization Code
-
-  const getAuthorizationCode = async (code) => {
-    const accessGrant = await prisma.oauthAccessGrant.findOne({ where: { token: code.code }, include: { user: true } });
-    if (!accessGrant) return false;
-
-    if (accessGrant.expiresAt && Date.parse(accessGrant.expiresAt) >= Date.now()) {
-      await revokeAuthorizationCode(code);
-      return false;
-    }
-
-    return {
-      code: accessGrant.token,
-      expiresAt: accessGrant.expiresAt,
-      scope: accessGrant.scopes[0],
-      client: {
-        id: accessGrant.applicationId
-      },
-      user: accessGrant.user,
-    }
-  }
-
-  const saveAuthorizationCode = async (code, client, user) => {
-    await prisma.oauthAccessGrants.create({
-      data: {
-        application: { connect: { id: client.id } },
-        user: { connect: { id: user.id } },
-        token: code.authorizationCode,
-        scope: Array.isArray(code.scope) ? code.scope : [code.scope],
-        expiresAt: code.expiresAt,
-        redirectUri: code.redirectUri
-      },
-    });
-
-    code.client = {
-      id: client.id,
-      clientId: client.clientId,
-      name: client.name,
-    };
-
-    code.user = {
-      id: user.id,
-      email: user.email,
-    };
-
-    return code;
-  };
-
-  const revokeAuthorizationCode = async ({ code }) => {
-    const accessGrant = await prisma.oauthAccessGrant.findOne({
-      where: { token: code },
-    });
-    if (!accessGrant) return false;
-
-    await prisma.oauthAccessGrant.delete({
-      where: { id: accessGrant.id },
-    });
-
-    return true
-  };
-
 
   const validateScope = async (user, client, scope) => {
     if (!client.scopes.length) return client.scopes;
