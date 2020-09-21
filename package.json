@@ -1,0 +1,51 @@
+{
+  "name": "oauth2-server-model-prisma",
+  "version": "0.1.0",
+  "description": "Prisma model for oauth2-server",
+  "main": "dist/oauth2-server-model-prisma.js",
+  "module": "dist/oauth2-server-model-prisma.modern.js",
+  "source": "./src/index.js",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "repository": "https://github.com/jpalumickas/node-oauth2-server-model-prisma",
+  "author": {
+    "name": "Justas Palumickas",
+    "email": "jpalumickas@gmail.com",
+    "url": "https://jpalumickas.com"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "bcrypt": "^5.0.0",
+    "jsonwebtoken": "^8.5.1",
+    "jwks-rsa": "^1.9.0"
+  },
+  "peerDependencies": {
+    "oauth2-server": "3.x"
+  },
+  "devDependencies": {
+    "@babel/plugin-proposal-optional-chaining": "^7.11.0",
+    "microbundle": "^0.12.3",
+    "prettier": "^2.1.2",
+    "rimraf": "^3.0.2"
+  },
+  "scripts": {
+    "build": "rimraf dist && microbundle --strict --target node -i src -o dist -f modern,cjs --no-compress",
+    "dev": "microbundle watch"
+  },
+  "prettier": {
+    "printWidth": 80,
+    "semi": true,
+    "singleQuote": true,
+    "trailingComma": "es5"
+  },
+  "keywords": [
+    "oauth",
+    "oauth2",
+    "oauth2-server",
+    "grant-type",
+    "prisma",
+    "model"
+  ]
+}
