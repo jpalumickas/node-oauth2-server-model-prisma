@@ -4,13 +4,13 @@
 
 Using Yarn
 ```sh
-yarn add oauth2-server-grant-type-apple
+yarn add oauth2-server-model-prisma
 ```
 
 Using NPM
 
 ```sh
-npm install oauth2-server-grant-type-apple
+npm install oauth2-server-model-prisma
 ```
 
 ## Usage
