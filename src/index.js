@@ -1,7 +1,8 @@
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
+import externalGrantTypes from './externalGrantTypes';
 
-export default ({ prisma }) => {
+export default ({ prisma, ...rest }) => {
   // Access Tokens
 
   const getAccessToken = async (token) => {
@@ -200,41 +201,6 @@ export default ({ prisma }) => {
 
   // External Grant Types
 
-  const getUserWithFacebook = async ({ email, id: facebookId, ...rest }) => {
-    console.log({ email, ...rest });
-    // TODO: Find by facebook id
-
-    const user = await prisma.user.findOne({ where: { email } });
-    if (!user) return;
-
-    // TODO: Create user
-
-    return user;
-  };
-
-  const getUserWithGoogle = async ({ email, id: facebookId, ...rest }) => {
-    console.log({ email, ...rest });
-    // TODO: Find by facebook id
-
-    const user = await prisma.user.findOne({ where: { email } });
-    if (!user) return;
-
-    // TODO: Create user
-
-    return user;
-  };
-
-  const getUserWithApple = async ({ email, ...rest }) => {
-    console.log({ email, ...rest });
-    // TODO: Find by facebook id
-
-    const user = await prisma.user.findOne({ where: { email } });
-    if (!user) return;
-
-    // TODO: Create user
-
-    return user;
-  };
 
   return {
     getClient,
@@ -251,8 +217,6 @@ export default ({ prisma }) => {
 
     validateScope,
 
-    getUserWithFacebook,
-    getUserWithGoogle,
-    getUserWithApple,
+    ...externalGrantTypes({ prisma, ...rest }),
   };
 };
