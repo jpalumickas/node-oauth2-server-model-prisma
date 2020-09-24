@@ -20,8 +20,8 @@
     "bcrypt": "^5.0.0"
   },
   "peerDependencies": {
-    "oauth2-server": "3.x",
-    "@prisma/client": "2.x"
+    "@prisma/client": "2.x",
+    "oauth2-server": "3.x"
   },
   "devDependencies": {
     "@babel/plugin-proposal-optional-chaining": "^7.11.0",
