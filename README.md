@@ -91,6 +91,21 @@ model User {
   accessTokens      OauthAccessToken[]
   accessGrants      OauthAccessGrant[]
 }
+
+model UserIdentity {
+  id        String   @default(dbgenerated()) @id
+  userId    String
+  provider  String
+  uid       String
+  name      String?
+  email     String?
+  createdAt DateTime
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId], name: "index_user_identities_on_user_id")
+  @@unique([provider, uid], name: "index_user_identities_on_provider_and_uid")
+}
 ```
 
 ## License
