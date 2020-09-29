@@ -180,7 +180,9 @@ export default ({ prisma, ...rest }) => {
   };
 
   const getUser = async (username, password) => {
-    const user = await prisma.user.findOne({ where: { email: username } });
+    if (!username || !password) return;
+
+    const user = await prisma.user.findOne({ where: { email: username.toLowerCase() } });
     if (!user) return;
     if (!user.encryptedPassword) return;
 
