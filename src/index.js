@@ -182,6 +182,7 @@ export default ({ prisma, ...rest }) => {
   const getUser = async (username, password) => {
     const user = await prisma.user.findOne({ where: { email: username } });
     if (!user) return;
+    if (!user.encryptedPassword) return;
 
     const validPassword = await bcrypt.compare(
       password,
