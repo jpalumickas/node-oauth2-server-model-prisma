@@ -2,10 +2,13 @@ const externalGrantTypes = ({ prisma, createUser }) => {
   const getUserByIdentity = async ({ provider, uid }) => {
     if (!provider || !uid) return;
 
-    const user = await prisma.user.findMany({
+    const result = await prisma.user.findMany({
       where: { identities: { some: { uid, provider } } },
       take: 1,
-    })[0];
+    });
+
+    const user = result[0];
+
     return user;
   };
 
