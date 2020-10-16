@@ -1,8 +1,10 @@
-const externalGrantTypes = ({ prisma, createUser }) => {
+const externalGrantTypes = ({ prisma, userModelName, createUser }) => {
+  const userIdentityModelName = `${userModelName}Identity`
+
   const getUserByIdentity = async ({ provider, uid }) => {
     if (!provider || !uid) return;
 
-    const result = await prisma.user.findMany({
+    const result = await prisma[userModelName].findMany({
       where: { identities: { some: { uid, provider } } },
       take: 1,
     });
@@ -13,8 +15,8 @@ const externalGrantTypes = ({ prisma, createUser }) => {
   };
 
   const saveUserIdentity = async ({ user, provider, uid, name, email }) => {
-    return await prisma.userIdentity.create({
-      user: { connect: { id: user.id } },
+    return await prisma[userIdentityModelName].create({
+      [userModelName]: { connect: { id: user.id } },
       provider,
       uid,
       name,
@@ -29,7 +31,7 @@ const externalGrantTypes = ({ prisma, createUser }) => {
     });
     if (userFromProvider) return userFromProvider;
 
-    const userByEmail = await prisma.user.findOne({ where: { email } });
+    const userByEmail = await prisma[userByEmail].findOne({ where: { email } });
 
     if (userByEmail) {
       await saveUserIdentity({

@@ -2,7 +2,11 @@ import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import externalGrantTypes from './externalGrantTypes';
 
-export default ({ prisma, ...rest }) => {
+export default ({
+  prisma,
+  userModelName = 'user',
+  ...rest
+}) => {
   // Access Tokens
 
   const getAccessToken = async (token) => {
@@ -45,7 +49,7 @@ export default ({ prisma, ...rest }) => {
         id: token.applicationId,
       },
       user: {
-        id: token.userId,
+        id: token[`${userModelName}Id`],
       },
     };
   };
@@ -57,7 +61,7 @@ export default ({ prisma, ...rest }) => {
     await prisma.oauthAccessToken.create({
       data: {
         application: { connect: { id: client.id } },
-        user: { connect: { id: user.id } },
+        [userModelName]: { connect: { id: user.id } },
         token: token.accessToken,
         refreshToken: token.refreshToken,
         tokenExpiresAt: token.accessTokenExpiresAt,
@@ -97,7 +101,7 @@ export default ({ prisma, ...rest }) => {
   const getAuthorizationCode = async (code) => {
     const accessGrant = await prisma.oauthAccessGrant.findOne({
       where: { token: code.code },
-      include: { user: true },
+      include: { [userModelName]: true },
     });
     if (!accessGrant) return false;
 
@@ -127,7 +131,7 @@ export default ({ prisma, ...rest }) => {
     await prisma.oauthAccessGrants.create({
       data: {
         application: { connect: { id: client.id } },
-        user: { connect: { id: user.id } },
+        [userModelName]: { connect: { id: user.id } },
         token: code.authorizationCode,
         expiresAt: code.expiresAt,
         createdAt: new Date().toISOString(),
@@ -182,7 +186,7 @@ export default ({ prisma, ...rest }) => {
   const getUser = async (username, password) => {
     if (!username || !password) return;
 
-    const user = await prisma.user.findOne({ where: { email: username.toLowerCase() } });
+    const user = await prisma[userModelName].findOne({ where: { email: username.toLowerCase() } });
     if (!user) return;
     if (!user.encryptedPassword) return;
 
@@ -220,6 +224,6 @@ export default ({ prisma, ...rest }) => {
 
     validateScope,
 
-    ...externalGrantTypes({ prisma, ...rest }),
+    ...externalGrantTypes({ prisma, userModelName, ...rest }),
   };
 };
