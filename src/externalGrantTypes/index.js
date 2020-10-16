@@ -31,7 +31,7 @@ const externalGrantTypes = ({ prisma, userModelName, createUser }) => {
     });
     if (userFromProvider) return userFromProvider;
 
-    const userByEmail = await prisma[userByEmail].findOne({ where: { email } });
+    const userByEmail = await prisma[userModelName].findOne({ where: { email } });
 
     if (userByEmail) {
       await saveUserIdentity({
