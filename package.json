@@ -24,7 +24,7 @@
     "oauth2-server": "3.x"
   },
   "devDependencies": {
-    "@babel/plugin-proposal-optional-chaining": "^7.11.0",
+    "@babel/plugin-proposal-optional-chaining": "^7.12.1",
     "microbundle": "^0.12.4",
     "prettier": "^2.1.2",
     "rimraf": "^3.0.2"
