@@ -20,13 +20,13 @@
     "bcrypt": "^5.0.0"
   },
   "peerDependencies": {
-    "@prisma/client": "2.x",
+    "@prisma/client": ">= 2.12",
     "oauth2-server": "3.x"
   },
   "devDependencies": {
-    "@babel/plugin-proposal-optional-chaining": "^7.12.1",
+    "@babel/plugin-proposal-optional-chaining": "^7.12.7",
     "microbundle": "^0.12.4",
-    "prettier": "^2.1.2",
+    "prettier": "^2.2.1",
     "rimraf": "^3.0.2"
   },
   "scripts": {
