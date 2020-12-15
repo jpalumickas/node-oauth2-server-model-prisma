@@ -1,26 +1,27 @@
-const externalGrantTypes = ({ prisma, userModelName, createUser }) => {
+const externalGrantTypes = ({ prisma, userModelName = 'user', createUser }) => {
   const userIdentityModelName = `${userModelName}Identity`
 
   const getUserByIdentity = async ({ provider, uid }) => {
     if (!provider || !uid) return;
 
-    const result = await prisma[userModelName].findMany({
+    const user = await prisma[userModelName].findFirst({
       where: { identities: { some: { uid, provider } } },
-      take: 1,
     });
-
-    const user = result[0];
 
     return user;
   };
 
   const saveUserIdentity = async ({ user, provider, uid, name, email }) => {
     return await prisma[userIdentityModelName].create({
-      [userModelName]: { connect: { id: user.id } },
-      provider,
-      uid,
-      name,
-      email,
+      data: {
+        // https://github.com/prisma/prisma/issues/4652
+        // [userModelName]: { connect: { id: user.id } },
+        userId: user.id,
+        provider,
+        uid,
+        name,
+        email,
+      }
     })
   }
 
@@ -35,6 +36,7 @@ const externalGrantTypes = ({ prisma, userModelName, createUser }) => {
 
     if (userByEmail) {
       await saveUserIdentity({
+        user: userByEmail,
         provider,
         uid,
         name,
@@ -90,7 +92,7 @@ const externalGrantTypes = ({ prisma, userModelName, createUser }) => {
     const { name, email, sub: uid  } = tokenData;
 
     const user = await getUserByProvider({
-      provider: 'google',
+      provider: 'apple',
       uid,
       name, // Only available on first time login
       email,
