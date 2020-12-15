@@ -41,8 +41,8 @@ model OauthAccessToken {
   tokenExpiresAt        DateTime?
   refreshTokenExpiresAt DateTime?
   scopes                Json             @default("[]")
-  createdAt             DateTime
-  updatedAt             DateTime         @updatedAt
+  createdAt             DateTime         @default(now())
+  updatedAt             DateTime         @default(now()) @updatedAt
   application           OauthApplication @relation(fields: [applicationId], references: [id])
   user                  User             @relation(fields: [userId], references: [id])
 
@@ -58,8 +58,8 @@ model OauthAccessGrant {
   expiresAt     DateTime
   redirectUri   String
   scopes        Json             @default("[]")
-  createdAt     DateTime
-  updatedAt     DateTime         @updatedAt
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @default(now()) @updatedAt
   application   OauthApplication @relation(fields: [applicationId], references: [id])
   user          User             @relation(fields: [userId], references: [id])
 
@@ -74,8 +74,8 @@ model OauthApplication {
   clientSecret String
   redirectUri  String
   scopes       Json               @default("[]")
-  createdAt    DateTime
-  updatedAt    DateTime           @updatedAt
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @default(now()) @updatedAt
   grants       Json               @default("[]")
   accessTokens OauthAccessToken[]
   accessGrants OauthAccessGrant[]
@@ -86,8 +86,8 @@ model User {
   name              String
   email             String             @unique
   encryptedPassword String
-  createdAt         DateTime
-  updatedAt         DateTime           @updatedAt
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @default(now()) @updatedAt
   accessTokens      OauthAccessToken[]
   accessGrants      OauthAccessGrant[]
 }
@@ -99,8 +99,8 @@ model UserIdentity {
   uid       String
   name      String?
   email     String?
-  createdAt DateTime
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
   user      User     @relation(fields: [userId], references: [id])
 
   @@index([userId], name: "index_user_identities_on_user_id")
