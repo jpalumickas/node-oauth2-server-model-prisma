@@ -56,6 +56,14 @@ const externalGrantTypes = ({ prisma, userModelName = 'user', createUser }) => {
       }
     });
 
+    await saveUserIdentity({
+      user,
+      provider,
+      uid,
+      name,
+      email,
+    });
+
     return user;
   }
 

@@ -2,10 +2,10 @@ import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import externalGrantTypes from './externalGrantTypes';
 
-export default ({
+const oauth2ServerModelPrisma = ({
   prisma,
   userModelName = 'user',
-  ...rest
+  createUser,
 }) => {
   // Access Tokens
 
@@ -224,6 +224,8 @@ export default ({
 
     validateScope,
 
-    ...externalGrantTypes({ prisma, userModelName, ...rest }),
+    ...externalGrantTypes({ prisma, userModelName, createUser }),
   };
 };
+
+export default oauth2ServerModelPrisma;
