@@ -10,7 +10,7 @@ const oauth2ServerModelPrisma = ({
   // Access Tokens
 
   const getAccessToken = async (token) => {
-    const accessToken = await prisma.oauthAccessToken.findOne({
+    const accessToken = await prisma.oauthAccessToken.findUnique({
       where: { token },
     });
 
@@ -28,7 +28,7 @@ const oauth2ServerModelPrisma = ({
   };
 
   const getRefreshToken = async (refreshToken) => {
-    const token = await prisma.oauthAccessToken.findOne({
+    const token = await prisma.oauthAccessToken.findUnique({
       where: { refreshToken },
     });
 
@@ -86,7 +86,7 @@ const oauth2ServerModelPrisma = ({
   };
 
   const revokeToken = async ({ token }) => {
-    const accessToken = await prisma.oauthAccessToken.findOne({
+    const accessToken = await prisma.oauthAccessToken.findUnique({
       where: { token },
     });
     if (!accessToken) return false;
@@ -99,7 +99,7 @@ const oauth2ServerModelPrisma = ({
   // Authorization Code
 
   const getAuthorizationCode = async (code) => {
-    const accessGrant = await prisma.oauthAccessGrant.findOne({
+    const accessGrant = await prisma.oauthAccessGrant.findUnique({
       where: { token: code.code },
       include: { [userModelName]: true },
     });
@@ -154,7 +154,7 @@ const oauth2ServerModelPrisma = ({
   };
 
   const revokeAuthorizationCode = async ({ code }) => {
-    const accessGrant = await prisma.oauthAccessGrant.findOne({
+    const accessGrant = await prisma.oauthAccessGrant.findUnique({
       where: { token: code },
     });
     if (!accessGrant) return false;
@@ -169,7 +169,7 @@ const oauth2ServerModelPrisma = ({
   // General
 
   const getClient = async (clientId, clientSecret) => {
-    const application = await prisma.oauthApplication.findOne({
+    const application = await prisma.oauthApplication.findUnique({
       where: { clientId },
     });
     if (!application) return;
@@ -186,7 +186,7 @@ const oauth2ServerModelPrisma = ({
   const getUser = async (username, password) => {
     if (!username || !password) return;
 
-    const user = await prisma[userModelName].findOne({ where: { email: username.toLowerCase() } });
+    const user = await prisma[userModelName].findUnique({ where: { email: username.toLowerCase() } });
     if (!user) return;
     if (!user.encryptedPassword) return;
 
