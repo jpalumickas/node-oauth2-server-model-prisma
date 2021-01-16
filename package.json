@@ -1,6 +1,6 @@
 {
   "name": "oauth2-server-model-prisma",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Prisma model for oauth2-server",
   "main": "dist/oauth2-server-model-prisma.js",
   "module": "dist/oauth2-server-model-prisma.modern.js",
