@@ -100,7 +100,7 @@ const oauth2ServerModelPrisma = ({
 
   const getAuthorizationCode = async (code) => {
     const accessGrant = await prisma.oauthAccessGrant.findUnique({
-      where: { token: code.code },
+      where: { token: code },
       include: { [userModelName]: true },
     });
     if (!accessGrant) return false;
@@ -109,7 +109,7 @@ const oauth2ServerModelPrisma = ({
       accessGrant.expiresAt &&
       Date.parse(accessGrant.expiresAt) <= Date.now()
     ) {
-      await revokeAuthorizationCode(code);
+      await revokeAuthorizationCode({ code });
       return false;
     }
 
@@ -120,7 +120,7 @@ const oauth2ServerModelPrisma = ({
       client: {
         id: accessGrant.applicationId,
       },
-      user: accessGrant.user,
+      user: accessGrant[userModelName],
     };
   };
 
