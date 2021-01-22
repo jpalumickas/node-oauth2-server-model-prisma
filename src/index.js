@@ -24,7 +24,13 @@ const oauth2ServerModelPrisma = ({
       return;
     }
 
-    return accessToken;
+    return {
+      ...accessToken,
+      accessTokenExpiresAt: accessToken.tokenExpiresAt,
+      user: {
+        id: accessToken[`${userModelName}Id`],
+      },
+    }
   };
 
   const getRefreshToken = async (refreshToken) => {
@@ -113,7 +119,7 @@ const oauth2ServerModelPrisma = ({
       return false;
     }
 
-    return {
+    const result = {
       code: accessGrant.token,
       expiresAt: accessGrant.expiresAt,
       scope: accessGrant.scopes[0],
@@ -122,21 +128,41 @@ const oauth2ServerModelPrisma = ({
       },
       user: accessGrant.user,
     };
+
+    if (accessGrant.codeChallenge) {
+      result.codeChallenge = accessGrant.codeChallenge
+
+      if (accessGrant.codeChallengeMethod) {
+        result.codeChallengeMethod = accessGrant.codeChallengeMethod
+      }
+    }
+
+    return result
   };
 
   const saveAuthorizationCode = async (code, client, user) => {
     const scopes =
       code.scope && (Array.isArray(code.scope) ? code.scope : [code.scope]);
 
-    await prisma.oauthAccessGrants.create({
-      data: {
-        application: { connect: { id: client.id } },
-        [userModelName]: { connect: { id: user.id } },
-        token: code.authorizationCode,
-        expiresAt: code.expiresAt,
-        createdAt: new Date().toISOString(),
-        redirectUri: code.redirectUri,
-      },
+    const data = {
+      application: { connect: { id: client.id } },
+      [userModelName]: { connect: { id: user.id } },
+      token: code.authorizationCode,
+      expiresAt: code.expiresAt,
+      createdAt: new Date().toISOString(),
+      redirectUri: code.redirectUri,
+    }
+
+    if (code.codeChallenge) {
+      data.codeChallenge = code.codeChallenge
+
+      if (code.codeChallengeMethod) {
+        data.codeChallengeMethod = code.codeChallengeMethod
+      }
+    }
+
+    await prisma.oauthAccessGrant.create({
+      data,
     });
 
     code.client = {
