@@ -57,6 +57,8 @@ model OauthAccessGrant {
   token         String
   expiresAt     DateTime
   redirectUri   String
+  codeChallengeMethod String?
+  codeChallenge String?
   scopes        Json             @default("[]")
   createdAt     DateTime         @default(now())
   updatedAt     DateTime         @default(now()) @updatedAt
@@ -72,7 +74,7 @@ model OauthApplication {
   name         String
   clientId     String             @unique
   clientSecret String
-  redirectUri  String
+  redirectUris Json               @default("[]")
   scopes       Json               @default("[]")
   createdAt    DateTime           @default(now())
   updatedAt    DateTime           @default(now()) @updatedAt
