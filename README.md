@@ -54,7 +54,7 @@ model OauthAccessGrant {
   id            String           @default(dbgenerated()) @id
   userId        String
   applicationId String
-  token         String
+  token         String           @unique
   expiresAt     DateTime
   redirectUri   String
   codeChallengeMethod String?
