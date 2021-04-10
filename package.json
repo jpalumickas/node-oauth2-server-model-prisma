@@ -4,6 +4,7 @@
   "description": "Prisma model for oauth2-server",
   "main": "dist/oauth2-server-model-prisma.js",
   "module": "dist/oauth2-server-model-prisma.modern.js",
+  "exports": "dist/oauth2-server-model-prisma.modern.js",
   "source": "./src/index.js",
   "files": [
     "dist",
@@ -17,14 +18,14 @@
   },
   "license": "MIT",
   "dependencies": {
-    "bcrypt": "^5.0.0"
+    "bcrypt": "^5.0.1"
   },
   "peerDependencies": {
     "@prisma/client": ">= 2.13",
     "oauth2-server": "3.x"
   },
   "devDependencies": {
-    "@babel/plugin-proposal-optional-chaining": "^7.12.7",
+    "@babel/plugin-proposal-optional-chaining": "^7.13.12",
     "microbundle": "^0.13.0",
     "prettier": "^2.2.1",
     "rimraf": "^3.0.2"
