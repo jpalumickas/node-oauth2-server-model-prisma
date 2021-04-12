@@ -1,12 +1,20 @@
 {
   "name": "oauth2-server-model-prisma",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "Prisma model for oauth2-server",
   "main": "dist/oauth2-server-model-prisma.js",
-  "module": "dist/oauth2-server-model-prisma.modern.js",
-  "exports": "dist/oauth2-server-model-prisma.modern.js",
+  "module": "dist/oauth2-server-model-prisma.module.js",
+  "exports": {
+    ".": {
+      "require": "./dist/oauth2-server-model-prisma.js",
+      "default": "./dist/oauth2-server-model-prisma.modern.js"
+    }
+  },
   "source": "./src/index.js",
-  "files": ["dist", "src"],
+  "files": [
+    "dist",
+    "src"
+  ],
   "repository": "https://github.com/jpalumickas/node-oauth2-server-model-prisma",
   "author": {
     "name": "Justas Palumickas",
@@ -28,7 +36,7 @@
     "rimraf": "^3.0.2"
   },
   "scripts": {
-    "build": "rimraf dist && microbundle --strict --target node -i src -o dist -f modern,cjs --no-compress",
+    "build": "rimraf dist && microbundle --strict --target node -i src -o dist -f modern,es,cjs --no-compress",
     "dev": "microbundle watch --target node"
   },
   "engines": {
