@@ -10,7 +10,8 @@
       "default": "./dist/oauth2-server-model-prisma.modern.js"
     }
   },
-  "source": "./src/index.js",
+  "types": "dist/oauth2-server-model-prisma.d.ts",
+  "source": "./src/index.ts",
   "files": [
     "dist",
     "src"
@@ -31,6 +32,9 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-optional-chaining": "^7.14.5",
+    "@prisma/client": "^2.29.1",
+    "@types/bcrypt": "^5.0.0",
+    "@types/oauth2-server": "^3.0.13",
     "microbundle": "^0.13.3",
     "prettier": "^2.3.2",
     "rimraf": "^3.0.2"
