@@ -6,8 +6,8 @@ type CreateUserParams = {
 
 type Params = {
   prisma: PrismaClient;
-  userModelName: string;
-  createUser: (params: CreateUserParams) => any;
+  userModelName?: string;
+  createUser?: (params: CreateUserParams) => any;
 }
 
 type FacebookTokenData = {
@@ -85,6 +85,8 @@ const externalGrantTypes = ({ prisma, userModelName = 'user', createUser }: Para
 
       return userByEmail;
     }
+
+    if (!createUser) return null;
 
     const user = await createUser({
       email,

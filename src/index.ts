@@ -11,8 +11,8 @@ const oauth2ServerModelPrisma = ({
   createUser,
 }: {
   prisma: PrismaClient,
-  userModelName: string,
-  createUser: () => any,
+  userModelName?: string,
+  createUser?: () => any,
 }): Model => {
   // Access Tokens
 
