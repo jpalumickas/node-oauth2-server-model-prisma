@@ -4,14 +4,8 @@
   "description": "Prisma model for oauth2-server",
   "main": "dist/oauth2-server-model-prisma.js",
   "module": "dist/oauth2-server-model-prisma.module.js",
-  "exports": {
-    ".": {
-      "require": "./dist/oauth2-server-model-prisma.js",
-      "default": "./dist/oauth2-server-model-prisma.modern.js"
-    }
-  },
-  "types": "dist/oauth2-server-model-prisma.d.ts",
-  "source": "./src/index.ts",
+  "types": "dist/index.d.ts",
+  "source": "src/index.ts",
   "files": [
     "dist",
     "src"
@@ -40,7 +34,7 @@
     "rimraf": "^3.0.2"
   },
   "scripts": {
-    "build": "rimraf dist && microbundle --strict --target node -i src -o dist -f modern,es,cjs --no-compress",
+    "build": "rimraf dist && microbundle --strict --target node -i src/index.ts -o dist -f modern,es,cjs --no-compress",
     "dev": "microbundle watch --target node"
   },
   "engines": {

@@ -1,5 +1,12 @@
 import { PrismaClient } from '@prisma/client';
-import { User, Token, RefreshToken, AuthorizationCode, Client, AuthorizationCodeModel } from 'oauth2-server';
+import {
+  User,
+  Token,
+  RefreshToken,
+  AuthorizationCode,
+  Client,
+  AuthorizationCodeModel,
+} from 'oauth2-server';
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import externalGrantTypes from './externalGrantTypes';
@@ -10,9 +17,9 @@ const oauth2ServerModelPrisma = ({
   userModelName = 'user',
   createUser,
 }: {
-  prisma: PrismaClient,
-  userModelName?: string,
-  createUser?: () => any,
+  prisma: PrismaClient;
+  userModelName?: string;
+  createUser?: () => any;
 }): Model => {
   // Access Tokens
 
@@ -37,13 +44,13 @@ const oauth2ServerModelPrisma = ({
       user: {
         id: accessToken[`${userModelName}Id`],
       },
-    }
+    };
   };
 
-  const getRefreshToken = async (refreshToken: string)  => {
+  const getRefreshToken = async (refreshToken: string) => {
     const token = await prisma.oauthAccessToken.findUnique({
       where: { refreshToken },
-      include: { application: true }
+      include: { application: true },
     });
 
     if (!token) return;
@@ -56,7 +63,7 @@ const oauth2ServerModelPrisma = ({
       return;
     }
 
-    const result: RefreshToken =  {
+    const result: RefreshToken = {
       token: token.token,
       refreshToken: token.refreshToken,
       client: {
@@ -140,10 +147,10 @@ const oauth2ServerModelPrisma = ({
     };
 
     if (accessGrant.codeChallenge) {
-      result.codeChallenge = accessGrant.codeChallenge
+      result.codeChallenge = accessGrant.codeChallenge;
 
       if (accessGrant.codeChallengeMethod) {
-        result.codeChallengeMethod = accessGrant.codeChallengeMethod
+        result.codeChallengeMethod = accessGrant.codeChallengeMethod;
       }
     }
 
@@ -155,10 +162,14 @@ const oauth2ServerModelPrisma = ({
       return false;
     }
 
-    return result
+    return result;
   };
 
-  const saveAuthorizationCode = async (code: AuthorizationCode, client: Client, user: User) => {
+  const saveAuthorizationCode = async (
+    code: AuthorizationCode,
+    client: Client,
+    user: User
+  ) => {
     const scopes =
       code.scope && (Array.isArray(code.scope) ? code.scope : [code.scope]);
 
@@ -169,13 +180,13 @@ const oauth2ServerModelPrisma = ({
       expiresAt: code.expiresAt,
       createdAt: new Date().toISOString(),
       redirectUri: code.redirectUri,
-    }
+    };
 
     if (code.codeChallenge) {
-      data.codeChallenge = code.codeChallenge
+      data.codeChallenge = code.codeChallenge;
 
       if (code.codeChallengeMethod) {
-        data.codeChallengeMethod = code.codeChallengeMethod
+        data.codeChallengeMethod = code.codeChallengeMethod;
       }
     }
 
@@ -228,7 +239,10 @@ const oauth2ServerModelPrisma = ({
     if (application.clientSecret.length !== clientSecret.length) return;
 
     if (
-      !crypto.timingSafeEqual(Buffer.from(application.clientSecret), Buffer.from(clientSecret))
+      !crypto.timingSafeEqual(
+        Buffer.from(application.clientSecret),
+        Buffer.from(clientSecret)
+      )
     )
       return;
 
@@ -238,7 +252,9 @@ const oauth2ServerModelPrisma = ({
   const getUser = async (username: string, password: string) => {
     if (!username || !password) return;
 
-    const user = await prisma[userModelName].findUnique({ where: { email: username.toLowerCase() } });
+    const user = await prisma[userModelName].findUnique({
+      where: { email: username.toLowerCase() },
+    });
     if (!user) return;
     if (!user.encryptedPassword) return;
 
@@ -251,7 +267,11 @@ const oauth2ServerModelPrisma = ({
     return user;
   };
 
-  const validateScope = async (user: User, client: Client, scope: string | string[]) => {
+  const validateScope = async (
+    user: User,
+    client: Client,
+    scope: string | string[]
+  ) => {
     if (!client.scopes.length) return client.scopes;
     if (!client.scopes.includes(scope)) return false;
 
@@ -260,7 +280,7 @@ const oauth2ServerModelPrisma = ({
 
   const verifyScope = async (token: Token, scope: string | string[]) => {
     return true;
-  }
+  };
 
   // External Grant Types
 

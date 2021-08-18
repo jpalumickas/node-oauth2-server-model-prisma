@@ -1,33 +1,31 @@
 import { PrismaClient } from '@prisma/client';
 
-type CreateUserParams = {
-
-}
+type CreateUserParams = {};
 
 type Params = {
   prisma: PrismaClient;
   userModelName?: string;
   createUser?: (params: CreateUserParams) => any;
-}
+};
 
 type FacebookTokenData = {
   first_name: string;
   last_name: string;
   email: string;
   id: string;
-}
+};
 
 type GoogleTokenData = {
   name: string;
   email: string;
   sub: string;
-}
+};
 
 type AppleTokenData = {
   name: string;
   email: string;
   sub: string;
-}
+};
 
 type GetUserByProviderParams = {
   provider: string;
@@ -35,13 +33,22 @@ type GetUserByProviderParams = {
   name: string;
   email: string;
   tokenData: any;
-}
+};
 
+const externalGrantTypes = ({
+  prisma,
+  userModelName = 'user',
+  createUser,
+}: Params) => {
+  const userIdentityModelName = `${userModelName}Identity`;
 
-const externalGrantTypes = ({ prisma, userModelName = 'user', createUser }: Params) => {
-  const userIdentityModelName = `${userModelName}Identity`
-
-  const getUserByIdentity = async ({ provider, uid }: { provider: string, uid: string }) => {
+  const getUserByIdentity = async ({
+    provider,
+    uid,
+  }: {
+    provider: string;
+    uid: string;
+  }) => {
     if (!provider || !uid) return;
 
     const user = await prisma[userModelName].findFirst({
@@ -51,7 +58,19 @@ const externalGrantTypes = ({ prisma, userModelName = 'user', createUser }: Para
     return user;
   };
 
-  const saveUserIdentity = async ({ user, provider, uid, name, email }: { provider: string, uid: string, name: string, email: string, user: any }) => {
+  const saveUserIdentity = async ({
+    user,
+    provider,
+    uid,
+    name,
+    email,
+  }: {
+    provider: string;
+    uid: string;
+    name: string;
+    email: string;
+    user: any;
+  }) => {
     return await prisma[userIdentityModelName].create({
       data: {
         // https://github.com/prisma/prisma/issues/4652
@@ -61,18 +80,26 @@ const externalGrantTypes = ({ prisma, userModelName = 'user', createUser }: Para
         uid,
         name,
         email,
-      }
-    })
-  }
+      },
+    });
+  };
 
-  const getUserByProvider = async ({ provider, uid, name, email, tokenData }: GetUserByProviderParams) => {
+  const getUserByProvider = async ({
+    provider,
+    uid,
+    name,
+    email,
+    tokenData,
+  }: GetUserByProviderParams) => {
     const userFromProvider = await getUserByIdentity({
       provider,
       uid,
     });
     if (userFromProvider) return userFromProvider;
 
-    const userByEmail = await prisma[userModelName].findUnique({ where: { email } });
+    const userByEmail = await prisma[userModelName].findUnique({
+      where: { email },
+    });
 
     if (userByEmail) {
       await saveUserIdentity({
@@ -95,7 +122,7 @@ const externalGrantTypes = ({ prisma, userModelName = 'user', createUser }: Para
         uid,
         name,
         tokenData,
-      }
+      },
     });
 
     await saveUserIdentity({
@@ -107,11 +134,11 @@ const externalGrantTypes = ({ prisma, userModelName = 'user', createUser }: Para
     });
 
     return user;
-  }
+  };
 
   const getUserWithFacebook = async (tokenData: FacebookTokenData) => {
-    const { first_name, last_name, email, id: uid  } = tokenData;
-    const name = [first_name, last_name].join(' ').trim()
+    const { first_name, last_name, email, id: uid } = tokenData;
+    const name = [first_name, last_name].join(' ').trim();
 
     const user = await getUserByProvider({
       provider: 'facebook',
@@ -124,9 +151,8 @@ const externalGrantTypes = ({ prisma, userModelName = 'user', createUser }: Para
     return user;
   };
 
-
   const getUserWithGoogle = async (tokenData: GoogleTokenData) => {
-    const { name, email, sub: uid  } = tokenData;
+    const { name, email, sub: uid } = tokenData;
 
     const user = await getUserByProvider({
       provider: 'google',
@@ -140,7 +166,7 @@ const externalGrantTypes = ({ prisma, userModelName = 'user', createUser }: Para
   };
 
   const getUserWithApple = async (tokenData: AppleTokenData) => {
-    const { name, email, sub: uid  } = tokenData;
+    const { name, email, sub: uid } = tokenData;
 
     const user = await getUserByProvider({
       provider: 'apple',
@@ -157,7 +183,7 @@ const externalGrantTypes = ({ prisma, userModelName = 'user', createUser }: Para
     getUserWithFacebook,
     getUserWithGoogle,
     getUserWithApple,
-  }
-}
+  };
+};
 
 export default externalGrantTypes;
