@@ -4,13 +4,8 @@
   "description": "Prisma model for oauth2-server",
   "main": "dist/oauth2-server-model-prisma.js",
   "module": "dist/oauth2-server-model-prisma.module.js",
-  "exports": {
-    ".": {
-      "require": "./dist/oauth2-server-model-prisma.js",
-      "default": "./dist/oauth2-server-model-prisma.modern.js"
-    }
-  },
-  "source": "./src/index.js",
+  "types": "dist/index.d.ts",
+  "source": "src/index.ts",
   "files": [
     "dist",
     "src"
@@ -31,12 +26,15 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-optional-chaining": "^7.14.5",
+    "@prisma/client": "^2.29.1",
+    "@types/bcrypt": "^5.0.0",
+    "@types/oauth2-server": "^3.0.13",
     "microbundle": "^0.13.3",
     "prettier": "^2.3.2",
     "rimraf": "^3.0.2"
   },
   "scripts": {
-    "build": "rimraf dist && microbundle --strict --target node -i src -o dist -f modern,es,cjs --no-compress",
+    "build": "rimraf dist && microbundle --strict --target node -i src/index.ts -o dist -f modern,es,cjs --no-compress",
     "dev": "microbundle watch --target node"
   },
   "engines": {
