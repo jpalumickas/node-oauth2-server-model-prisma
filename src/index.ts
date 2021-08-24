@@ -229,17 +229,21 @@ const oauth2ServerModelPrisma = ({
 
   // General
 
-  const getClient = async (clientId: string, clientSecret: string) => {
-    if (!clientSecret || !clientId) return;
+  // clientSecret can be undefined when grant type does not require client
+  // secret
+  const getClient = async (clientId: string, clientSecret?: string) => {
+    if (!clientId) return;
 
     const application = await prisma.oauthApplication.findUnique({
       where: { clientId },
     });
 
     if (!application) return;
-    if (application.clientSecret.length !== clientSecret.length) return;
+    if (clientSecret && application.clientSecret.length !== clientSecret.length)
+      return;
 
     if (
+      clientSecret &&
       !crypto.timingSafeEqual(
         Buffer.from(application.clientSecret),
         Buffer.from(clientSecret)
