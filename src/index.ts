@@ -11,6 +11,7 @@ import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import externalGrantTypes from './externalGrantTypes';
 import { Model } from './types';
+export * from './types';
 
 const oauth2ServerModelPrisma = ({
   prisma,
@@ -300,6 +301,7 @@ const oauth2ServerModelPrisma = ({
     revokeAuthorizationCode,
 
     validateScope,
+    prisma,
 
     ...externalGrantTypes({ prisma, userModelName, createUser }),
   };

@@ -1,3 +1,4 @@
+import { PrismaClient } from '@prisma/client';
 import {
   AuthorizationCodeModel,
   ClientCredentialsModel,
@@ -6,14 +7,11 @@ import {
   ExtensionModel,
 } from 'oauth2-server';
 
-interface User {
-  id: string;
-  email: string;
-}
-
-export type Model =
+type Oauth2ServerModel =
   | AuthorizationCodeModel
   | ClientCredentialsModel
   | RefreshTokenModel
   | PasswordModel
   | ExtensionModel;
+
+export type Model = Oauth2ServerModel & { prisma: PrismaClient };
