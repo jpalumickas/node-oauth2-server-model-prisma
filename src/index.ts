@@ -55,6 +55,7 @@ const oauth2ServerModelPrisma = ({
     });
 
     if (!token) return;
+    if (!token.refreshToken) return;
 
     if (
       token.refreshTokenExpiresAt &&

@@ -46,8 +46,8 @@ model OauthAccessToken {
   application           OauthApplication @relation(fields: [applicationId], references: [id])
   user                  User             @relation(fields: [userId], references: [id])
 
-  @@index([applicationId], name: "index_oauth_access_tokens_on_application_id")
-  @@index([userId], name: "index_oauth_access_tokens_on_user_id")
+  @@index([applicationId])
+  @@index([userId])
 }
 
 model OauthAccessGrant {
@@ -65,8 +65,8 @@ model OauthAccessGrant {
   application   OauthApplication @relation(fields: [applicationId], references: [id])
   user          User             @relation(fields: [userId], references: [id])
 
-  @@index([applicationId], name: "index_oauth_access_grants_on_application_id")
-  @@index([userId], name: "index_oauth_access_grants_on_user_id")
+  @@index([applicationId])
+  @@index([userId])
 }
 
 model OauthApplication {
@@ -92,6 +92,7 @@ model User {
   updatedAt         DateTime           @default(now()) @updatedAt
   accessTokens      OauthAccessToken[]
   accessGrants      OauthAccessGrant[]
+  identities        UserIdentity[]
 }
 
 model UserIdentity {
@@ -105,8 +106,8 @@ model UserIdentity {
   updatedAt DateTime @default(now()) @updatedAt
   user      User     @relation(fields: [userId], references: [id])
 
-  @@index([userId], name: "index_user_identities_on_user_id")
-  @@unique([provider, uid], name: "index_user_identities_on_provider_and_uid")
+  @@index([userId])
+  @@unique([provider, uid])
 }
 ```
 
