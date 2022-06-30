@@ -5,7 +5,7 @@ type CreateUserParams = {};
 type Params = {
   prisma: PrismaClient;
   userModelName?: string;
-  createUser?: (params: CreateUserParams) => any;
+  createUser?: (params: CreateUserParams) => Promise<any>;
 };
 
 type FacebookTokenData = {
