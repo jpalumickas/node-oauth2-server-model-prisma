@@ -38,11 +38,11 @@ model OauthAccessToken {
   applicationId         String
   token                 String           @unique
   refreshToken          String?          @unique
-  tokenExpiresAt        DateTime?
-  refreshTokenExpiresAt DateTime?
+  tokenExpiresAt        DateTime?        @db.Timestamptz(6)
+  refreshTokenExpiresAt DateTime?        @db.Timestamptz(6)
   scopes                Json             @default("[]")
-  createdAt             DateTime         @default(now())
-  updatedAt             DateTime         @default(now()) @updatedAt
+  createdAt             DateTime         @default(now()) @db.Timestamptz(6)
+  updatedAt             DateTime         @default(now()) @updatedAt @db.Timestamptz(6)
   application           OauthApplication @relation(fields: [applicationId], references: [id])
   user                  User             @relation(fields: [userId], references: [id])
 
@@ -55,13 +55,13 @@ model OauthAccessGrant {
   userId        String
   applicationId String
   token         String           @unique
-  expiresAt     DateTime
+  expiresAt     DateTime         @db.Timestamptz(6)
   redirectUri   String
   codeChallengeMethod String?
   codeChallenge String?
   scopes        Json             @default("[]")
-  createdAt     DateTime         @default(now())
-  updatedAt     DateTime         @default(now()) @updatedAt
+  createdAt     DateTime         @default(now()) @db.Timestamptz(6)
+  updatedAt     DateTime         @default(now()) @updatedAt @db.Timestamptz(6)
   application   OauthApplication @relation(fields: [applicationId], references: [id])
   user          User             @relation(fields: [userId], references: [id])
 
@@ -76,8 +76,8 @@ model OauthApplication {
   clientSecret String
   redirectUris Json               @default("[]")
   scopes       Json               @default("[]")
-  createdAt    DateTime           @default(now())
-  updatedAt    DateTime           @default(now()) @updatedAt
+  createdAt    DateTime           @default(now()) @db.Timestamptz(6)
+  updatedAt    DateTime           @default(now()) @updatedAt @db.Timestamptz(6)
   grants       Json               @default("[]")
   accessTokens OauthAccessToken[]
   accessGrants OauthAccessGrant[]
@@ -88,8 +88,8 @@ model User {
   name              String
   email             String             @unique
   encryptedPassword String
-  createdAt         DateTime           @default(now())
-  updatedAt         DateTime           @default(now()) @updatedAt
+  createdAt         DateTime           @default(now()) @db.Timestamptz(6)
+  updatedAt         DateTime           @default(now()) @updatedAt @db.Timestamptz(6)
   accessTokens      OauthAccessToken[]
   accessGrants      OauthAccessGrant[]
   identities        UserIdentity[]
@@ -102,8 +102,8 @@ model UserIdentity {
   uid       String
   name      String?
   email     String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamptz(6)
   user      User     @relation(fields: [userId], references: [id])
 
   @@index([userId])
