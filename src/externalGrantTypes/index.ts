@@ -1,6 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-
-type CreateUserParams = {};
+import { CreateUserParams } from '../types';
 
 type Params = {
   prisma: PrismaClient;

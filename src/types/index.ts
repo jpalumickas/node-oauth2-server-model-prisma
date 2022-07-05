@@ -17,3 +17,13 @@ type Oauth2ServerModel =
 export type Model = {
   prisma: PrismaClient;
 } & Oauth2ServerModel;
+
+export type CreateUserParams = {
+  email?: string;
+  name?: string;
+  provider: {
+    uid: string;
+    name?: string;
+    tokenData: any;
+  }
+};

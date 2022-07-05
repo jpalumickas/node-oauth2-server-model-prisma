@@ -11,7 +11,7 @@ import {
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import externalGrantTypes from './externalGrantTypes';
-import { Model } from './types';
+import { Model, CreateUserParams } from './types';
 export * from './types';
 
 const oauth2ServerModelPrisma = ({
@@ -21,7 +21,7 @@ const oauth2ServerModelPrisma = ({
 }: {
   prisma: PrismaClient;
   userModelName?: string;
-  createUser?: () => Promise<any>;
+  createUser?: (params: CreateUserParams) => Promise<any>;
 }): Model => {
   // Access Tokens
 
