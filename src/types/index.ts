@@ -14,4 +14,6 @@ type Oauth2ServerModel =
   | PasswordModel
   | ExtensionModel;
 
-export type Model = Oauth2ServerModel & { prisma: PrismaClient };
+export type Model = {
+  prisma: PrismaClient;
+} & Oauth2ServerModel;

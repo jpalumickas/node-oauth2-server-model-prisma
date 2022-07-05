@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 import {
   User,
   Token,
@@ -6,6 +6,7 @@ import {
   AuthorizationCode,
   Client,
   AuthorizationCodeModel,
+  Falsey,
 } from 'oauth2-server';
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
@@ -20,32 +21,40 @@ const oauth2ServerModelPrisma = ({
 }: {
   prisma: PrismaClient;
   userModelName?: string;
-  createUser?: () => any;
+  createUser?: () => Promise<any>;
 }): Model => {
   // Access Tokens
 
-  const getAccessToken = async (token: string) => {
+  const getAccessToken = async (token: string): Promise<Token | Falsey> => {
     const accessToken = await prisma.oauthAccessToken.findUnique({
       where: { token },
     });
 
     if (!accessToken) return;
 
+    const result: Token = {
+      accessToken: accessToken.token,
+      accessTokenExpiresAt: accessToken.tokenExpiresAt || undefined,
+      refreshToken: accessToken.refreshToken || undefined,
+      refreshTokenExpiresAt: accessToken.refreshTokenExpiresAt || undefined,
+      client: {
+        id: accessToken.applicationId,
+        grants: [],
+      },
+      user: {
+        id: accessToken[`${userModelName}Id` as 'userId'],
+      },
+    };
+
     if (
       accessToken.tokenExpiresAt &&
-      Date.parse(accessToken.tokenExpiresAt) <= Date.now()
+      accessToken.tokenExpiresAt <= new Date()
     ) {
-      await revokeToken(accessToken);
+      await revokeToken(result);
       return;
     }
 
-    return {
-      ...accessToken,
-      accessTokenExpiresAt: accessToken.tokenExpiresAt,
-      user: {
-        id: accessToken[`${userModelName}Id`],
-      },
-    };
+    return result;
   };
 
   const getRefreshToken = async (refreshToken: string) => {
@@ -57,25 +66,27 @@ const oauth2ServerModelPrisma = ({
     if (!token) return;
     if (!token.refreshToken) return;
 
-    if (
-      token.refreshTokenExpiresAt &&
-      Date.parse(token.refreshTokenExpiresAt) <= Date.now()
-    ) {
-      await revokeToken(token);
-      return;
-    }
 
     const result: RefreshToken = {
       token: token.token,
       refreshToken: token.refreshToken,
       client: {
         id: token.applicationId,
-        grants: token.application.grants,
+        grants: token.application.grants as string[],
+        redirectUris: token.application.redirectUris as string[],
       },
       user: {
-        id: token[`${userModelName}Id`],
+        id: token[`${userModelName}Id` as 'userId'],
       },
     };
+
+    if (
+      token.refreshTokenExpiresAt &&
+      token.refreshTokenExpiresAt <= new Date()
+    ) {
+      await revokeToken(result);
+      return;
+    }
 
     return result;
   };
@@ -87,7 +98,7 @@ const oauth2ServerModelPrisma = ({
     await prisma.oauthAccessToken.create({
       data: {
         application: { connect: { id: client.id } },
-        [userModelName]: { connect: { id: user.id } },
+        [userModelName as 'user']: { connect: { id: user.id } },
         token: token.accessToken,
         refreshToken: token.refreshToken,
         tokenExpiresAt: token.accessTokenExpiresAt,
@@ -112,7 +123,7 @@ const oauth2ServerModelPrisma = ({
     return token;
   };
 
-  const revokeToken = async ({ token }: RefreshToken | Token) => {
+  const revokeToken = async ({ token }: Token | RefreshToken) => {
     const accessToken = await prisma.oauthAccessToken.findUnique({
       where: { token },
     });
@@ -130,7 +141,7 @@ const oauth2ServerModelPrisma = ({
   const getAuthorizationCode = async (code: string) => {
     const accessGrant = await prisma.oauthAccessGrant.findUnique({
       where: { token: code },
-      include: { [userModelName]: true, application: true },
+      include: { [userModelName as 'user']: true, application: true },
     });
 
     if (!accessGrant) return false;
@@ -139,13 +150,13 @@ const oauth2ServerModelPrisma = ({
       code: accessGrant.token,
       authorizationCode: accessGrant.token,
       expiresAt: accessGrant.expiresAt,
-      scope: accessGrant.scopes[0],
+      scope: (accessGrant.scopes as string[])[0],
       redirectUri: accessGrant.redirectUri,
       client: {
         id: accessGrant.applicationId,
-        grants: accessGrant.applciation.grants,
+        grants: accessGrant.application.grants as string[],
       },
-      user: accessGrant[userModelName],
+      user: accessGrant[userModelName as 'user'],
     };
 
     if (accessGrant.codeChallenge) {
@@ -158,7 +169,7 @@ const oauth2ServerModelPrisma = ({
 
     if (
       accessGrant.expiresAt &&
-      Date.parse(accessGrant.expiresAt) <= Date.now()
+      accessGrant.expiresAt <= new Date()
     ) {
       await revokeAuthorizationCode(result);
       return false;
@@ -170,14 +181,14 @@ const oauth2ServerModelPrisma = ({
   const saveAuthorizationCode = async (
     code: AuthorizationCode,
     client: Client,
-    user: User
+    user: User,
   ) => {
     const scopes =
       code.scope && (Array.isArray(code.scope) ? code.scope : [code.scope]);
 
-    const data = {
+    const data: Prisma.OauthAccessGrantCreateArgs['data'] = {
       application: { connect: { id: client.id } },
-      [userModelName]: { connect: { id: user.id } },
+      [userModelName as 'user']: { connect: { id: user.id } },
       token: code.authorizationCode,
       expiresAt: code.expiresAt,
       createdAt: new Date().toISOString(),
@@ -232,12 +243,13 @@ const oauth2ServerModelPrisma = ({
 
   // clientSecret can be undefined when grant type does not require client
   // secret
-  const getClient = async (clientId: string, clientSecret?: string) => {
+  const getClient = async (clientId: string, clientSecret?: string): Promise<Client | Falsey> => {
     if (!clientId) return;
 
     const application = await prisma.oauthApplication.findUnique({
       where: { clientId },
     });
+
 
     if (!application) return;
     if (clientSecret && application.clientSecret.length !== clientSecret.length)
@@ -247,18 +259,23 @@ const oauth2ServerModelPrisma = ({
       clientSecret &&
       !crypto.timingSafeEqual(
         Buffer.from(application.clientSecret),
-        Buffer.from(clientSecret)
+        Buffer.from(clientSecret),
       )
     )
       return;
 
-    return application;
+    return {
+      id: application.id,
+      grants: application.grants as string[],
+      redirectUris: application.redirectUris as string[],
+      scopes: application.scopes as string[],
+    };
   };
 
   const getUser = async (username: string, password: string) => {
     if (!username || !password) return;
 
-    const user = await prisma[userModelName].findUnique({
+    const user = await prisma[userModelName as 'user'].findUnique({
       where: { email: username.toLowerCase() },
     });
     if (!user) return;
@@ -266,7 +283,7 @@ const oauth2ServerModelPrisma = ({
 
     const validPassword = await bcrypt.compare(
       password,
-      user.encryptedPassword
+      user.encryptedPassword,
     );
     if (!validPassword) return;
 
@@ -276,8 +293,9 @@ const oauth2ServerModelPrisma = ({
   const validateScope = async (
     user: User,
     client: Client,
-    scope: string | string[]
+    scope: string | string[],
   ) => {
+    if (client.scopes === undefined) return [];
     if (!client.scopes.length) return client.scopes;
     if (!client.scopes.includes(scope)) return false;
 
@@ -307,7 +325,6 @@ const oauth2ServerModelPrisma = ({
 
     validateScope,
     prisma,
-
     ...externalGrantTypes({ prisma, userModelName, createUser }),
   };
 };

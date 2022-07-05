@@ -51,7 +51,7 @@ const externalGrantTypes = ({
   }) => {
     if (!provider || !uid) return;
 
-    const user = await prisma[userModelName].findFirst({
+    const user = await prisma[userModelName as 'user'].findFirst({
       where: { identities: { some: { uid, provider } } },
     });
 
@@ -71,7 +71,7 @@ const externalGrantTypes = ({
     email: string;
     user: any;
   }) => {
-    return await prisma[userIdentityModelName].create({
+    return await prisma[userIdentityModelName as 'userIdentity'].create({
       data: {
         // https://github.com/prisma/prisma/issues/4652
         // [userModelName]: { connect: { id: user.id } },
@@ -97,7 +97,7 @@ const externalGrantTypes = ({
     });
     if (userFromProvider) return userFromProvider;
 
-    const userByEmail = await prisma[userModelName].findUnique({
+    const userByEmail = await prisma[userModelName as 'user'].findUnique({
       where: { email },
     });
 
