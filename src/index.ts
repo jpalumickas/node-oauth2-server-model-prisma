@@ -91,7 +91,7 @@ const oauth2ServerModelPrisma = ({
     return result;
   };
 
-  const saveToken = async (token: Token, client: Client, user: User) => {
+  const saveToken = async (token: Token, client: Client, user: User): Promise<Token> => {
     const scopes =
       token.scope && (Array.isArray(token.scope) ? token.scope : [token.scope]);
 
@@ -112,7 +112,7 @@ const oauth2ServerModelPrisma = ({
       id: client.id,
       clientId: client.clientId,
       name: client.name,
-      grants: client.grants,
+      grants: [],
     };
 
     token.user = {
@@ -123,7 +123,7 @@ const oauth2ServerModelPrisma = ({
     return token;
   };
 
-  const revokeToken = async ({ token }: Token | RefreshToken) => {
+  const revokeToken = async ({ token }: Token | RefreshToken): Promise<boolean> => {
     const accessToken = await prisma.oauthAccessToken.findUnique({
       where: { token },
     });
