@@ -1,15 +1,16 @@
-import { Prisma, PrismaClient } from '@prisma/client';
+import crypto from 'node:crypto';
+import bcrypt from 'bcrypt';
+
 import {
   User,
   Token,
   RefreshToken,
   AuthorizationCode,
   Client,
-  AuthorizationCodeModel,
   Falsey,
 } from 'oauth2-server';
-import bcrypt from 'bcrypt';
-import crypto from 'crypto';
+
+import { Prisma, PrismaClient } from './generated/prisma/client.js';
 import externalGrantTypes from './externalGrantTypes';
 import { Model, CreateUserParams } from './types';
 export * from './types';
@@ -66,7 +67,6 @@ const oauth2ServerModelPrisma = ({
     if (!token) return;
     if (!token.refreshToken) return;
 
-
     const result: RefreshToken = {
       token: token.token,
       refreshToken: token.refreshToken,
@@ -91,7 +91,11 @@ const oauth2ServerModelPrisma = ({
     return result;
   };
 
-  const saveToken = async (token: Token, client: Client, user: User): Promise<Token> => {
+  const saveToken = async (
+    token: Token,
+    client: Client,
+    user: User,
+  ): Promise<Token> => {
     const scopes =
       token.scope && (Array.isArray(token.scope) ? token.scope : [token.scope]);
 
@@ -123,7 +127,9 @@ const oauth2ServerModelPrisma = ({
     return token;
   };
 
-  const revokeToken = async ({ token }: Token | RefreshToken): Promise<boolean> => {
+  const revokeToken = async ({
+    token,
+  }: Token | RefreshToken): Promise<boolean> => {
     const accessToken = await prisma.oauthAccessToken.findUnique({
       where: { token },
     });
@@ -167,10 +173,7 @@ const oauth2ServerModelPrisma = ({
       }
     }
 
-    if (
-      accessGrant.expiresAt &&
-      accessGrant.expiresAt <= new Date()
-    ) {
+    if (accessGrant.expiresAt && accessGrant.expiresAt <= new Date()) {
       await revokeAuthorizationCode(result);
       return false;
     }
@@ -243,13 +246,15 @@ const oauth2ServerModelPrisma = ({
 
   // clientSecret can be undefined when grant type does not require client
   // secret
-  const getClient = async (clientId: string, clientSecret?: string): Promise<Client | Falsey> => {
+  const getClient = async (
+    clientId: string,
+    clientSecret?: string,
+  ): Promise<Client | Falsey> => {
     if (!clientId) return;
 
     const application = await prisma.oauthApplication.findUnique({
       where: { clientId },
     });
-
 
     if (!application) return;
     if (clientSecret && application.clientSecret.length !== clientSecret.length)
