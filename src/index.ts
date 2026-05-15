@@ -155,7 +155,7 @@ export const oauth2ServerModelPrisma = ({
       code: accessGrant.token,
       authorizationCode: accessGrant.token,
       expiresAt: accessGrant.expiresAt,
-      scope: (accessGrant.scopes as string[])[0],
+      scope: accessGrant.scopes as string[],
       redirectUri: accessGrant.redirectUri,
       client: {
         id: accessGrant.applicationId,
@@ -297,11 +297,11 @@ export const oauth2ServerModelPrisma = ({
   const validateScope = async (
     user: User,
     client: Client,
-    scope: string | string[],
-  ) => {
+    scope?: string[],
+  ): Promise<string[] | Falsey> => {
     if (client.scopes === undefined) return [];
     if (!client.scopes.length) return client.scopes;
-    if (!client.scopes.includes(scope)) return false;
+    if (!scope || !scope.every((s) => client.scopes!.includes(s))) return false;
 
     return client.scopes;
   };

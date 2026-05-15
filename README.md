@@ -1,11 +1,11 @@
 # Prisma model for node OAuth2 Server
 
 > [!NOTE]
-> As of v0.10, this package targets [`@node-oauth/oauth2-server`](https://github.com/node-oauth/node-oauth2-server)
-> v4 — the actively maintained continuation of the abandoned
+> As of v0.11, this package targets [`@node-oauth/oauth2-server`](https://github.com/node-oauth/node-oauth2-server)
+> v5 — the actively maintained continuation of the abandoned
 > [`oauth2-server`](https://github.com/oauthjs/node-oauth2-server) project.
-> If you're still on `oauth2-server` 3.x, stay on v0.9.x of this package or
-> migrate to the fork (the API is compatible).
+> If you're still on `oauth2-server` 3.x, stay on v0.9.x of this package and
+> plan a migration (the fork's API is largely compatible).
 
 ## Installation
 
@@ -117,6 +117,14 @@ model UserIdentity {
   @@unique([provider, uid])
 }
 ```
+
+## Compatibility
+
+| `oauth2-server-model-prisma` | OAuth2 server peer dependency                                          |
+| ---------------------------- | ---------------------------------------------------------------------- |
+| `0.11.x`                     | [`@node-oauth/oauth2-server`](https://github.com/node-oauth/node-oauth2-server) `^5` |
+| `0.10.x`                     | [`@node-oauth/oauth2-server`](https://github.com/node-oauth/node-oauth2-server) `^4` |
+| `<= 0.9.x`                   | [`oauth2-server`](https://github.com/oauthjs/node-oauth2-server) `3.x` (unmaintained) |
 
 ## License
 

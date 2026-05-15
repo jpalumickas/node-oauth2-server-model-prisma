@@ -17,6 +17,8 @@ type GoogleTokenData = {
   name: string;
   email: string;
   sub: string;
+  aud: string;
+  [key: string]: unknown;
 };
 
 type AppleTokenData = {
