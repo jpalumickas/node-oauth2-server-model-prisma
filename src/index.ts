@@ -12,6 +12,7 @@ import type {
 
 import externalGrantTypes from './external-grant-types.js';
 import type { Model, CreateUserParams, OAuthPrismaClient } from './types.js';
+
 export * from './types.js';
 
 export const oauth2ServerModelPrisma = ({

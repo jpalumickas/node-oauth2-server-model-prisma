@@ -22,13 +22,24 @@
     "dist",
     "prisma/models.prisma"
   ],
-  "repository": "https://github.com/jpalumickas/node-oauth2-server-model-prisma",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jpalumickas/node-oauth2-server-model-prisma.git"
+  },
+  "homepage": "https://github.com/jpalumickas/node-oauth2-server-model-prisma#readme",
+  "bugs": {
+    "url": "https://github.com/jpalumickas/node-oauth2-server-model-prisma/issues"
+  },
   "author": {
     "name": "Justas Palumickas",
     "email": "jpalumickas@gmail.com",
     "url": "https://jpalumickas.com"
   },
   "license": "MIT",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "dependencies": {
     "bcrypt": "^6.0.0"
   },
