@@ -8,13 +8,13 @@ import type {
   AuthorizationCode,
   Client,
   Falsey,
-} from 'oauth2-server';
+} from '@node-oauth/oauth2-server';
 
 import externalGrantTypes from './external-grant-types.js';
 import type { Model, CreateUserParams, OAuthPrismaClient } from './types.js';
 export * from './types.js';
 
-const oauth2ServerModelPrisma = ({
+export const oauth2ServerModelPrisma = ({
   prisma,
   userModelName = 'user',
   createUser,
@@ -332,5 +332,3 @@ const oauth2ServerModelPrisma = ({
     ...externalGrantTypes({ prisma, userModelName, createUser }),
   };
 };
-
-export default oauth2ServerModelPrisma;

@@ -1,5 +1,12 @@
 # Prisma model for node OAuth2 Server
 
+> [!NOTE]
+> As of v0.10, this package targets [`@node-oauth/oauth2-server`](https://github.com/node-oauth/node-oauth2-server)
+> v4 — the actively maintained continuation of the abandoned
+> [`oauth2-server`](https://github.com/oauthjs/node-oauth2-server) project.
+> If you're still on `oauth2-server` 3.x, stay on v0.9.x of this package or
+> migrate to the fork (the API is compatible).
+
 ## Installation
 
 Using PNPM

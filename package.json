@@ -1,7 +1,7 @@
 {
   "name": "oauth2-server-model-prisma",
-  "version": "0.9.0",
-  "description": "Prisma model for oauth2-server",
+  "version": "0.10.0",
+  "description": "Prisma model for @node-oauth/oauth2-server",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -33,13 +33,13 @@
     "bcrypt": "^6.0.0"
   },
   "peerDependencies": {
-    "@prisma/client": ">=7",
-    "oauth2-server": "3.x"
+    "@node-oauth/oauth2-server": "^4.0.0",
+    "@prisma/client": ">=7"
   },
   "devDependencies": {
+    "@node-oauth/oauth2-server": "^4.3.3",
     "@prisma/client": "^7.8.0",
     "@types/bcrypt": "^6.0.0",
-    "@types/oauth2-server": "^3.0.18",
     "dotenv": "^17.4.2",
     "oxfmt": "^0.49.0",
     "prisma": "^7.8.0",
