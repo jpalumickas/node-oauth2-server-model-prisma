@@ -6,7 +6,6 @@
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "source": "src/index.ts",
   "exports": {
     ".": {
       "import": {
@@ -21,7 +20,7 @@
   },
   "files": [
     "dist",
-    "src"
+    "prisma/models.prisma"
   ],
   "repository": "https://github.com/jpalumickas/node-oauth2-server-model-prisma",
   "author": {
@@ -40,7 +39,7 @@
   "devDependencies": {
     "@prisma/client": "^7.8.0",
     "@types/bcrypt": "^6.0.0",
-    "@types/oauth2-server": "^3.0.13",
+    "@types/oauth2-server": "^3.0.18",
     "dotenv": "^17.4.2",
     "oxfmt": "^0.49.0",
     "prisma": "^7.8.0",
@@ -48,11 +47,11 @@
     "typescript": "^6.0.3"
   },
   "scripts": {
-    "prebuild": "prisma generate",
     "build": "tsdown",
     "dev": "tsdown --watch",
     "format": "oxfmt src",
     "format:check": "oxfmt --check src",
+    "typecheck": "tsc --noEmit",
     "prisma:generate": "prisma generate"
   },
   "engines": {

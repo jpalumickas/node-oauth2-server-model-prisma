@@ -1,8 +1,7 @@
-import type { PrismaClient } from './generated/prisma/client.js';
-import type { CreateUserParams } from './types.js';
+import type { CreateUserParams, OAuthPrismaClient } from './types.js';
 
 type Params = {
-  prisma: PrismaClient;
+  prisma: OAuthPrismaClient;
   userModelName?: string;
   createUser?: (params: CreateUserParams) => Promise<any>;
 };

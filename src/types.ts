@@ -5,7 +5,20 @@ import type {
   PasswordModel,
   ExtensionModel,
 } from 'oauth2-server';
-import { PrismaClient } from './generated/prisma/client.js';
+
+type PrismaDelegate = {
+  findUnique: (args: any) => Promise<any>;
+  findFirst: (args: any) => Promise<any>;
+  create: (args: any) => Promise<any>;
+  delete: (args: any) => Promise<any>;
+};
+
+export interface OAuthPrismaClient {
+  oauthAccessToken: PrismaDelegate;
+  oauthAccessGrant: PrismaDelegate;
+  oauthApplication: PrismaDelegate;
+  [key: string]: any;
+}
 
 type Oauth2ServerModel =
   | AuthorizationCodeModel
@@ -15,7 +28,7 @@ type Oauth2ServerModel =
   | ExtensionModel;
 
 export type Model = {
-  prisma: PrismaClient;
+  prisma: OAuthPrismaClient;
 } & Oauth2ServerModel;
 
 export type CreateUserParams = {

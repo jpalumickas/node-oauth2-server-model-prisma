@@ -10,9 +10,8 @@ import type {
   Falsey,
 } from 'oauth2-server';
 
-import { Prisma, PrismaClient } from './generated/prisma/client.js';
 import externalGrantTypes from './external-grant-types.js';
-import type { Model, CreateUserParams } from './types.js';
+import type { Model, CreateUserParams, OAuthPrismaClient } from './types.js';
 export * from './types.js';
 
 const oauth2ServerModelPrisma = ({
@@ -20,7 +19,7 @@ const oauth2ServerModelPrisma = ({
   userModelName = 'user',
   createUser,
 }: {
-  prisma: PrismaClient;
+  prisma: OAuthPrismaClient;
   userModelName?: string;
   createUser?: (params: CreateUserParams) => Promise<any>;
 }): Model => {
@@ -189,9 +188,9 @@ const oauth2ServerModelPrisma = ({
     const scopes =
       code.scope && (Array.isArray(code.scope) ? code.scope : [code.scope]);
 
-    const data: Prisma.OauthAccessGrantCreateArgs['data'] = {
+    const data: Record<string, any> = {
       application: { connect: { id: client.id } },
-      [userModelName as 'user']: { connect: { id: user.id } },
+      [userModelName]: { connect: { id: user.id } },
       token: code.authorizationCode,
       expiresAt: code.expiresAt,
       createdAt: new Date().toISOString(),
