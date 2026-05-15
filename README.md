@@ -2,9 +2,9 @@
 
 ## Installation
 
-Using Yarn
+Using PNPM
 ```sh
-yarn add oauth2-server-model-prisma
+pnpm add oauth2-server-model-prisma
 ```
 
 Using NPM
