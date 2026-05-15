@@ -2,15 +2,16 @@
   "name": "oauth2-server-model-prisma",
   "version": "0.9.0",
   "description": "Prisma model for oauth2-server",
+  "type": "module",
   "main": "./dist/index.cjs",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.cts",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "source": "src/index.ts",
   "exports": {
     ".": {
       "import": {
-        "types": "./dist/index.d.mts",
-        "default": "./dist/index.mjs"
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
       },
       "require": {
         "types": "./dist/index.d.cts",
@@ -41,7 +42,7 @@
     "@types/bcrypt": "^6.0.0",
     "@types/oauth2-server": "^3.0.13",
     "dotenv": "^17.4.2",
-    "prettier": "^3.8.3",
+    "oxfmt": "^0.49.0",
     "prisma": "^7.8.0",
     "tsdown": "^0.22.0",
     "typescript": "^6.0.3"
@@ -50,16 +51,12 @@
     "prebuild": "prisma generate",
     "build": "tsdown",
     "dev": "tsdown --watch",
+    "format": "oxfmt src",
+    "format:check": "oxfmt --check src",
     "prisma:generate": "prisma generate"
   },
   "engines": {
     "node": ">=20"
-  },
-  "prettier": {
-    "printWidth": 80,
-    "semi": true,
-    "singleQuote": true,
-    "trailingComma": "all"
   },
   "keywords": [
     "oauth",

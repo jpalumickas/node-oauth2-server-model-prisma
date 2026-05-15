@@ -1,7 +1,7 @@
 import crypto from 'node:crypto';
 import bcrypt from 'bcrypt';
 
-import {
+import type {
   User,
   Token,
   RefreshToken,
@@ -12,7 +12,7 @@ import {
 
 import { Prisma, PrismaClient } from './generated/prisma/client.js';
 import externalGrantTypes from './external-grant-types.js';
-import { Model, CreateUserParams } from './types.js';
+import type { Model, CreateUserParams } from './types.js';
 export * from './types.js';
 
 const oauth2ServerModelPrisma = ({

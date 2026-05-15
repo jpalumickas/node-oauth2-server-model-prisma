@@ -1,5 +1,5 @@
-import { PrismaClient } from './generated/prisma/client.js';
-import { CreateUserParams } from './types.js';
+import type { PrismaClient } from './generated/prisma/client.js';
+import type { CreateUserParams } from './types.js';
 
 type Params = {
   prisma: PrismaClient;

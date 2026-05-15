@@ -9,6 +9,7 @@
     "moduleResolution": "Bundler",
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
+    "verbatimModuleSyntax": true,
     "rootDir": "./src",
     "outDir": "./dist"
   },
