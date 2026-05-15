@@ -23,17 +23,17 @@ npm install oauth2-server-model-prisma
 ## Usage
 
 ```js
-  import model from 'oauth2-server-model-prisma';
+import { oauth2ServerModelPrisma } from 'oauth2-server-model-prisma';
 
-  const server = new OAuth2Server({
-    model: {
-      ...model({ prisma }),
-    },
-    requireClientAuthentication: {
-      password: false,
-      refresh_token: false,
-    },
-  });
+const server = new OAuth2Server({
+  model: {
+    ...oauth2ServerModelPrisma({ prisma }),
+  },
+  requireClientAuthentication: {
+    password: false,
+    refresh_token: false,
+  },
+});
 ```
 
 ### Prisma Schema
