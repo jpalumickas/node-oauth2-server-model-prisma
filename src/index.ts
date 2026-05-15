@@ -11,9 +11,9 @@ import {
 } from 'oauth2-server';
 
 import { Prisma, PrismaClient } from './generated/prisma/client.js';
-import externalGrantTypes from './externalGrantTypes';
-import { Model, CreateUserParams } from './types';
-export * from './types';
+import externalGrantTypes from './external-grant-types.js';
+import { Model, CreateUserParams } from './types.js';
+export * from './types.js';
 
 const oauth2ServerModelPrisma = ({
   prisma,

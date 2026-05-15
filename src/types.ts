@@ -1,4 +1,3 @@
-import { PrismaClient } from '../generated/prisma/client.js';
 import {
   AuthorizationCodeModel,
   ClientCredentialsModel,
@@ -6,6 +5,7 @@ import {
   PasswordModel,
   ExtensionModel,
 } from 'oauth2-server';
+import { PrismaClient } from './generated/prisma/client.js';
 
 type Oauth2ServerModel =
   | AuthorizationCodeModel
@@ -25,5 +25,5 @@ export type CreateUserParams = {
     uid: string;
     name?: string;
     tokenData: any;
-  }
+  };
 };
