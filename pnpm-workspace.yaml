@@ -3,6 +3,3 @@ allowBuilds:
   '@prisma/engines': false
   bcrypt: false
   prisma: false
-
-overrides:
-  lodash: ^4.18.1

@@ -49,13 +49,13 @@
   },
   "devDependencies": {
     "@node-oauth/oauth2-server": "^5.3.0",
-    "@prisma/client": "^7.8.0",
+    "@prisma/client": "^7.9.1",
     "@types/bcrypt": "^6.0.0",
     "dotenv": "^17.4.2",
-    "oxfmt": "^0.49.0",
-    "prisma": "^7.8.0",
-    "tsdown": "^0.22.0",
-    "typescript": "^6.0.3"
+    "oxfmt": "^0.62.0",
+    "prisma": "^7.9.1",
+    "tsdown": "^0.22.14",
+    "typescript": "^7.0.2"
   },
   "scripts": {
     "build": "tsdown",
@@ -76,5 +76,5 @@
     "prisma",
     "model"
   ],
-  "packageManager": "pnpm@11.1.2+sha512.415a1cc25974731e75455c1468371be74c5aa5fb7621b50d4056d222451609f11412f23fd602e6169f1e060466641f798597e1be961a10688836a67b16569499"
+  "packageManager": "pnpm@11.21.0+sha512.521705bce689924eac72f5a3587122f362689ef6571e55ba80076fd637c11132ecffada26fad4ea79c485bfddbfd3d5a2a5b05805a77e893de71ec8a6cca3bb1"
 }
